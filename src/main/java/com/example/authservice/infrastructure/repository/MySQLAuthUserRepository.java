@@ -6,7 +6,7 @@ import org.jooq.DSLContext;
 
 import java.util.Optional;
 
-import static com.example.jooq.tables.authdb.tables.AuthUsers.AUTH_USERS;
+import static com.example.jooq.authdb.tables.AuthUsers.AUTH_USERS;
 
 
 public class MySQLAuthUserRepository implements AuthUserRepository {

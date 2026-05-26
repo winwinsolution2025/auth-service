@@ -20,13 +20,6 @@ import io.javalin.http.HttpResponseException;
 import io.javalin.http.HttpStatus;
 import io.javalin.json.JavalinJackson;
 import io.javalin.plugin.bundled.CorsPluginConfig;
-import liquibase.Contexts;
-import liquibase.LabelExpression;
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.resource.ClassLoaderResourceAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -35,8 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DriverManager;
+
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -46,7 +38,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         AppConfig config = AppConfig.GetInstance();
-        migrate(config);
+//        migrate(config);
 
         NatsJetStreamClient natBroker = new NatsJetStreamClient(config.getNatsOrigin(), config.getNatsUsername(), config.getNatsPassword());
 
@@ -57,9 +49,15 @@ public class Main {
         var authController = getAuthController(natBroker, config);
 
         Javalin app = Javalin.create(conf -> {
+            //enable Virtual Threads (Loom Project)
+            conf.jetty.threadPool = new org.eclipse.jetty.util.thread.QueuedThreadPool();
+            //enable cors
             conf.bundledPlugins.enableCors(cors -> {
                 cors.addRule(CorsPluginConfig.CorsRule::anyHost);
             });
+
+
+
             conf.jsonMapper(new JavalinJackson(JsonMapper.builder()
                     .addModule(new JavaTimeModule())
                     .build(), true));
@@ -148,17 +146,17 @@ public class Main {
         };
     }
 
-    static void migrate(AppConfig config) {
-        try (Connection connection = DriverManager.getConnection(config.getDbUrl(), config.getDbUser(), config.getDbPass())) {
-            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-            try (Liquibase liquibase = new Liquibase("db/changelog/db.changelog-master.xml", new ClassLoaderResourceAccessor(), database)) {
-                liquibase.update(new Contexts(), new LabelExpression());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Migration failed", e);
-        }
-    }
+//    static void migrate(AppConfig config) {
+//        try (Connection connection = DriverManager.getConnection(config.getDbUrl(), config.getDbUser(), config.getDbPass())) {
+//            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+//            try (Liquibase liquibase = new Liquibase("db/changelog/db.changelog-master.xml", new ClassLoaderResourceAccessor(), database)) {
+//                liquibase.update(new Contexts(), new LabelExpression());
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("Migration failed", e);
+//        }
+//    }
 
     private static DataSource createHikariDataSource(AppConfig cfg) {
         HikariConfig config = new HikariConfig();

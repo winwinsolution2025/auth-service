@@ -1,6 +1,7 @@
+.DS_Store
 .idea
 .vscode
 /target/
+out
 .env
 local.env
-.DS_Store

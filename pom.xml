@@ -4,7 +4,7 @@
     <artifactId>auth-service</artifactId>
     <version>1.0</version>
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
     </properties>
     <dependencies>
         <!-- Javalin -->
@@ -12,11 +12,6 @@
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
             <version>6.6.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.17</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -44,28 +39,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
-        <!-- Liquibase -->
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>4.31.1</version>
-        </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
             <version>3.20.9</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-meta</artifactId>
-            <version>3.20.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-codegen</artifactId>
-            <version>3.20.9</version>
-        </dependency>
         <!-- JWT Dependencies -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -99,72 +78,40 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.example.authservice.Main
-                            </mainClass> <!-- Replace with your actual main class -->
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>0.10.6</version>
+                <extensions>true</extensions>
                 <executions>
                     <execution>
+                        <id>build-native</id>
+                        <goals>
+                            <goal>compile-no-fork</goal>
+                        </goals>
                         <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.example.authservice.Main
-                                    </mainClass> <!-- Replace with your actual main class -->
-                                </transformer>
-                            </transformers>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.6.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <imageName>app-java21-native</imageName>
+                    <mainClass>com.example.authservice.Main</mainClass>
+                    <buildArgs>
+                        <buildArg>--no-fallback</buildArg>
+                        <buildArg>--initialize-at-run-time=java.io.Console,java.io.ProxyingConsole,sun.security.util.Password</buildArg>
+                        <buildArg>--initialize-at-run-time=com.fasterxml.jackson.core.json.async.NonBlockingJsonParser</buildArg>
+                        <buildArg>--initialize-at-run-time=org.eclipse.jetty.util.log.Log</buildArg>
+                        <buildArg>--initialize-at-run-time=org.eclipse.jetty.setuid.SetUIDServer</buildArg>
+                        <buildArg>-O3</buildArg>
+                    </buildArgs>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.25.1</version>
                 <configuration>
-                    <url>jdbc:mysql://localhost:3306/userdb</url>
+                    <url>jdbc:mysql://localhost:3306/authdb</url>
                     <username>root</username>
-                    <password>root123</password>
+                    <password>root#baotran#lop7</password>
                     <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
                 </configuration>
                 <dependencies>
@@ -178,59 +125,69 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <release>21</release>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <version>3.20.9</version>
-                <executions>
-                    <execution>
-                        <id>generate-jooq</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jdbc>
-                        <driver>com.mysql.cj.jdbc.Driver</driver>
-                        <url>${env.DB_URL}</url>
-                        <user>${env.DB_USER}</user>
-                        <password>${env.DB_PASS}</password>
-                    </jdbc>
-
-                    <generator>
-                        <name>org.jooq.codegen.DefaultGenerator</name>
-                        <database>
-                            <name>org.jooq.meta.mysql.MySQLDatabase</name>
-                            <includes>auth_users|tokens</includes>
-                            <forcedTypes>
-                                <forcedType>
-                                    <name>TIMESTAMP</name> <!-- Java type -->
-                                    <userType>java.time.Instant</userType>
-                                    <includeTypes>TIMESTAMP</includeTypes> <!-- SQL type regex -->
-                                </forcedType>
-                            </forcedTypes>
-                        </database>
-                        <generate>
-                            <daos>false</daos>
-                            <pojos>false</pojos>
-                            <records>false</records>
-                        </generate>
-                        <target>
-                            <packageName>com.example.jooq.tables</packageName>
-                            <directory>target/generated-sources/jooq</directory>
-                        </target>
-                    </generator>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>jooq-codegen</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq-codegen-maven</artifactId>
+                        <version>3.20.9</version>
+                        <executions>
+                            <execution>
+                                <id>generate-jooq</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <jdbc>
+                                <driver>com.mysql.cj.jdbc.Driver</driver>
+                                <url>${env.DB_URL}</url>
+                                <user>${env.DB_USER}</user>
+                                <password>${env.DB_PASS}</password>
+                            </jdbc>
+
+                            <generator>
+                                <name>org.jooq.codegen.DefaultGenerator</name>
+                                <database>
+                                    <name>org.jooq.meta.mysql.MySQLDatabase</name>
+                                    <includes>auth_users|tokens</includes>
+                                    <forcedTypes>
+                                        <forcedType>
+                                            <name>TIMESTAMP</name> <!-- Java type -->
+                                            <userType>java.time.Instant</userType>
+                                            <includeTypes>TIMESTAMP</includeTypes> <!-- SQL type regex -->
+                                        </forcedType>
+                                    </forcedTypes>
+                                </database>
+                                <generate>
+                                    <daos>false</daos>
+                                    <pojos>false</pojos>
+                                    <records>false</records>
+                                </generate>
+                                <target>
+                                    <packageName>com.example.jooq</packageName>
+                                    <directory>src/main/java</directory>
+                                </target>
+                            </generator>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

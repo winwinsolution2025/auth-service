@@ -1,16 +1,29 @@
 export DevID =ocid1.compartment.oc1..aaaaaaaadh37bvvavyij7uwekvq32eu6bgb2awddnmucisib6bdbsm4pcieq
+IMAGE := letanthang/auth-service
 gen:
 	mvn clean generate-sources
+gen/jooq:
+	mvn clean install -P jooq-codegen
+migrate:
+	mvn liquibase:update
 in:
 	mvn clean install
 run:
 	mvn clean install
-	java -jar target/auth-service-1.0.jar
+	./target/app-java25-native
+native:
+	javac -d out src/main/java/com/example/authservice/Main.java && native-image -cp out com.example.authservice.Main out/main  && ./out/main
 
 # enable builder
 buildx:
 	docker buildx create --use
 
+build:
+	docker buildx build \
+	--platform linux/arm64 \
+	-t $(IMAGE) \
+	--load \
+      .
 
 build/docker:
 	docker build \
@@ -24,7 +37,7 @@ build/multi:
 	--platform linux/amd64,linux/arm64 \
 	--build-arg MAVEN_IMAGE=maven:3.9.6-eclipse-temurin-17 \
 	--build-arg JRE_IMAGE=eclipse-temurin:17-jre \
-	-t ap-singapore-1.ocir.io/axfnrpyfvlpv/auth-service:latest \
+	-t $(IMAGE) \
 	--push \
       .
 up:

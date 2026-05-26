@@ -2,7 +2,7 @@ package com.example.authservice.infrastructure.repository;
 
 import com.example.authservice.domain.entity.Token;
 import com.example.authservice.domain.repository.TokenRepository;
-import com.example.jooq.tables.authdb.tables.Tokens;
+import com.example.jooq.authdb.tables.Tokens;
 import org.jooq.DSLContext;
 
 import java.time.Instant;

@@ -1,0 +1,10 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": "db/changelog/.*\\.xml"},
+      {"pattern": "db/changelog/.*\\.sql"},
+      {"pattern": "liquibase\\.css"},
+      {"pattern": "com/liquibase/.*"}
+    ]
+  }
+}
