@@ -10,6 +10,11 @@
     </appender>
 
     <logger name="org.eclipse.jetty" level="WARN" />
+    <logger name="org.eclipse.jetty.server" level="INFO" />
+    <logger name="org.eclipse.jetty.io" level="INFO" />
+    <logger name="org.eclipse.jetty.http" level="INFO" />
+    <logger name="org.eclipse.jetty.util" level="INFO" />
+
     <logger name="io.javalin" level="INFO" />
     <logger name="org.jooq" level="INFO" />
 

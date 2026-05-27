@@ -22,5 +22,17 @@
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.example.authservice.dto.UserRegisterRequest",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.example.authservice.dto.RegisterResponse",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
   }
 ]
