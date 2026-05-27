@@ -7,10 +7,12 @@ gen/jooq:
 migrate:
 	mvn liquibase:update
 in:
-	mvn clean install
+	mvn clean install -DskipTests
 run:
-	mvn clean install
+	mvn clean install -DskipTests
 	./target/app-java25-native
+jvm:
+	mvn compile exec:java -Dexec.mainClass="com.example.authservice.Main"
 native:
 	javac -d out src/main/java/com/example/authservice/Main.java && native-image -cp out com.example.authservice.Main out/main  && ./out/main
 

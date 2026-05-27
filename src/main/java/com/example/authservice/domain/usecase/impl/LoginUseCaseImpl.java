@@ -11,12 +11,15 @@ import com.example.authservice.infrastructure.nats.NatsJetStreamClient;
 import com.example.authservice.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoginUseCaseImpl implements LoginUseCase {
     private final AuthUserRepository authUserRepository;
     private final TokenRepository tokenRepository;
     private final NatsJetStreamClient natBroker;
     private final String userLoginSubject;
+    private static final Logger logger = LoggerFactory.getLogger(LoginUseCaseImpl.class);
 
     public LoginUseCaseImpl(AuthUserRepository authUserRepository, TokenRepository tokenRepository, NatsJetStreamClient natBroker, String userLoginSubject) {
         this.authUserRepository = authUserRepository;
@@ -27,9 +30,11 @@ public class LoginUseCaseImpl implements LoginUseCase {
 
     @Override
     public String login(String email, String password) {
+        logger.info("Login using client with email {} and password {}", email, password);
         var user = this.authUserRepository.getAuthUserByEmail(email);
 
         if (user.isEmpty()) {
+            logger.warn("User with email {} not found", email);
             throw new UnauthorizedUserException();
         }
 

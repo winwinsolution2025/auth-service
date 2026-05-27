@@ -4,8 +4,19 @@
     <artifactId>auth-service</artifactId>
     <version>1.0</version>
     <properties>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.21.3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <!-- Javalin -->
         <dependency>
@@ -13,21 +24,34 @@
             <artifactId>javalin</artifactId>
             <version>6.6.0</version>
         </dependency>
+        <!-- logback -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.13</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.5.32</version>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.20</version>
+            <version>1.5.32</version>
         </dependency>
         <!-- Jackson for JSON -->
         <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-parameter-names</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.16.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.16.1</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -42,7 +66,7 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
-            <version>3.20.9</version>
+            <version>3.19.34</version>
         </dependency>
 
         <!-- JWT Dependencies -->
@@ -92,14 +116,23 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <imageName>app-java21-native</imageName>
+                    <imageName>app-java25-native</imageName>
                     <mainClass>com.example.authservice.Main</mainClass>
                     <buildArgs>
                         <buildArg>--no-fallback</buildArg>
-                        <buildArg>--initialize-at-run-time=java.io.Console,java.io.ProxyingConsole,sun.security.util.Password</buildArg>
+                        <buildArg>-H:-ParseRuntimeOptions</buildArg>
+                        <buildArg>-Djava.awt.headless=true</buildArg>
+                        <buildArg>--trace-object-instantiation=java.io.ProxyingConsole</buildArg>
+                        <buildArg>--initialize-at-run-time=ch.qos.logback.classic.LoggerContext</buildArg>
+                        <buildArg>--initialize-at-run-time=ch.qos.logback.core.util.StatusPrinter</buildArg>
+                        <buildArg>--initialize-at-run-time=org.eclipse.jetty,io.javalin</buildArg>
+                        <buildArg>--initialize-at-build-time=org.jooq.meta</buildArg>
+                        <buildArg>--initialize-at-run-time=org.jooq.impl</buildArg>
+                        <buildArg>--initialize-at-run-time=org.jooq.tools</buildArg>
+                        <buildArg>--initialize-at-run-time=org.jooq.conf</buildArg>
+                        <buildArg>--initialize-at-run-time=com.oracle.svm.hosted.ProgressReporter</buildArg>
+                        <buildArg>--initialize-at-run-time=sun.security.util.Password</buildArg>
                         <buildArg>--initialize-at-run-time=com.fasterxml.jackson.core.json.async.NonBlockingJsonParser</buildArg>
-                        <buildArg>--initialize-at-run-time=org.eclipse.jetty.util.log.Log</buildArg>
-                        <buildArg>--initialize-at-run-time=org.eclipse.jetty.setuid.SetUIDServer</buildArg>
                         <buildArg>-O3</buildArg>
                     </buildArgs>
                 </configuration>
@@ -127,7 +160,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>21</release>
+                    <release>25</release>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
@@ -143,7 +179,7 @@
                     <plugin>
                         <groupId>org.jooq</groupId>
                         <artifactId>jooq-codegen-maven</artifactId>
-                        <version>3.20.9</version>
+                        <version>3.19.34</version>
                         <executions>
                             <execution>
                                 <id>generate-jooq</id>

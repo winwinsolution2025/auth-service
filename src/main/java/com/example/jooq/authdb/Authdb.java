@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.jooq.Catalog;
 import org.jooq.Table;
-import org.jooq.impl.DSL;
 import org.jooq.impl.SchemaImpl;
 
 
@@ -44,7 +43,7 @@ public class Authdb extends SchemaImpl {
      * No further instances allowed
      */
     private Authdb() {
-        super(DSL.name("authdb"), null, DSL.comment(""));
+        super("authdb", null);
     }
 
 
