@@ -6,6 +6,7 @@ public class AuthUser {
     private Integer userId;
     private Long uuid;
     private String email;
+    private String googleId;
     private String password;
     private Role role;
     public static final String TABLE_NAME = "auth_users";
@@ -13,11 +14,12 @@ public class AuthUser {
     public AuthUser() {
     }
 
-    public AuthUser(Integer id, Integer userID, Long uuid, String email, String password, Role role) {
+    public AuthUser(Integer id, Integer userID, Long uuid, String email, String googleId, String password, Role role) {
         this.id = id;
         this.userId = userID;
         this.uuid = uuid;
         this.email = email;
+        this.googleId = googleId;
         this.password = password;
         this.role = role;
     }
@@ -52,6 +54,13 @@ public class AuthUser {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
+
+    public String getGoogleId() {
+        return googleId;
     }
 
     public String getPassword() {

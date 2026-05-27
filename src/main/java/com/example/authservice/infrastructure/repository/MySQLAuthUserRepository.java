@@ -26,6 +26,14 @@ public class MySQLAuthUserRepository implements AuthUserRepository {
     }
 
     @Override
+    public Optional<AuthUser> getAuthUserByGoogleId(String id) {
+        return dbCtx.selectFrom(AuthUser.TABLE_NAME)
+                .where("google_id = ?", id)
+                .fetchOptionalInto(AuthUser.class);
+
+    }
+
+    @Override
     public Optional<AuthUser> getAuthUserByEmail(String email) {
         return dbCtx.selectFrom(AuthUser.TABLE_NAME)
                 .where("email = ?", email)

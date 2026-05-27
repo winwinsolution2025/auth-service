@@ -2,7 +2,7 @@ package com.example.authservice.domain.usecase.impl;
 
 import com.example.authservice.domain.repository.TokenRepository;
 import com.example.authservice.domain.usecase.LogoutUseCase;
-import com.example.authservice.service.JwtService;
+import com.example.authservice.infrastructure.service.JwtService;
 
 public class LogoutUseCaseImpl implements LogoutUseCase {
     private final TokenRepository tokenRepository;

@@ -1,4 +1,4 @@
-package com.example.authservice.infrastructure.nats;
+package com.example.authservice.infrastructure.service.nats;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

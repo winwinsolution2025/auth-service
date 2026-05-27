@@ -1,10 +1,10 @@
-package com.example.authservice.service.client;
+package com.example.authservice.infrastructure.service.user;
 
 import com.example.authservice.config.AppConfig;
-import com.example.authservice.service.JwtService;
-import com.example.authservice.service.client.user.CreateUserRequest;
-import com.example.authservice.service.client.user.CreateUserResponse;
-import com.example.authservice.service.client.user.UserResponse;
+import com.example.authservice.infrastructure.service.JwtService;
+import com.example.authservice.infrastructure.service.user.user.CreateUserRequest;
+import com.example.authservice.infrastructure.service.user.user.CreateUserResponse;
+import com.example.authservice.infrastructure.service.user.user.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.javalin.http.HttpResponseException;

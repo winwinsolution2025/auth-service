@@ -12,10 +12,14 @@ public class AppConfig {
     private String natsPassword;
     private String natsAuthUserLoginSubject;
     private String natsAuthUserRegisterSubject;
+    private String redisPubSubHost;
+    private int redisPubSubPort;
+    private String redisPubSubPass;
+    private String redisPubSubInChannel;
+    private String googleOAuthClientIds;
+
     private static AppConfig config;
 
-    private AppConfig() {
-    }
 
     public static AppConfig GetInstance() {
         if (config == null) {
@@ -34,14 +38,24 @@ public class AppConfig {
             config.setUserServiceOrigin(userServiceOrigin);
             String natsOrigin = System.getenv().getOrDefault("NATS_ORIGIN", "");
             config.setNatsOrigin(natsOrigin);
-            String natsUsername = System.getenv().getOrDefault("NATS_USERNAME", "");
+            String natsUsername = System.getenv().getOrDefault("NATS_USER", "");
             config.setNatsUsername(natsUsername);
-            String natsPassword = System.getenv().getOrDefault("NATS_PASSWORD", "");
+            String natsPassword = System.getenv().getOrDefault("NATS_PASS", "");
             config.setNatsPassword(natsPassword);
             String natsAuthUserLoginSubject = System.getenv().getOrDefault("NATS_AUTH_USER_LOGIN_SUBJECT", "");
             config.setNatsAuthUserLoginSubject(natsAuthUserLoginSubject);
             String natsAuthUserRegisterSubject = System.getenv().getOrDefault("NATS_AUTH_USER_REGISTER_SUBJECT", "");
             config.setNatsAuthUserRegisterSubject(natsAuthUserRegisterSubject);
+            String googleOAuthClientIds = System.getenv().getOrDefault("GOOGLE_OAUTH_CLIENT_IDS", "");
+            config.setGoogleOAuthClientIds(googleOAuthClientIds);
+            String redisPubSubHost = System.getenv().getOrDefault("REDIS_PUBSUB_HOST", "");
+            config.setRedisPubSubHost(redisPubSubHost);
+            int redisPubSubPort = Integer.parseInt(System.getenv().getOrDefault("REDIS_PUBSUB_PORT", ""));
+            config.setRedisPubSubPort(redisPubSubPort);
+            String redisPubSubPassword = System.getenv().getOrDefault("REDIS_PUBSUB_PASS", "");
+            config.setRedisPubSubPass(redisPubSubPassword);
+            String redisPubSubInChannel = System.getenv().getOrDefault("REDIS_CHANNEL_SEND", "");
+            config.setRedisPubSubInChannel(redisPubSubInChannel);
         }
 
         return config;
@@ -133,5 +147,45 @@ public class AppConfig {
 
     public void setNatsAuthUserRegisterSubject(String natAuthRegisterSubject) {
         this.natsAuthUserRegisterSubject = natAuthRegisterSubject;
+    }
+
+    public String getGoogleOAuthClientIds() {
+        return googleOAuthClientIds;
+    }
+
+    public void setGoogleOAuthClientIds(String googleOAuthClientIds) {
+        this.googleOAuthClientIds = googleOAuthClientIds;
+    }
+
+    public void setRedisPubSubHost(String redisPubSubHost) {
+        this.redisPubSubHost = redisPubSubHost;
+    }
+
+    public String getRedisPubSubHost() {
+        return this.redisPubSubHost;
+    }
+
+    public int getRedisPubSubPort() {
+        return redisPubSubPort;
+    }
+
+    public void setRedisPubSubPort(int redisPubSubPort) {
+        this.redisPubSubPort = redisPubSubPort;
+    }
+
+    public String getRedisPubSubInChannel() {
+        return redisPubSubInChannel;
+    }
+
+    public void setRedisPubSubInChannel(String redisPubSubInChannel) {
+        this.redisPubSubInChannel = redisPubSubInChannel;
+    }
+
+    public String getRedisPubSubPass() {
+        return redisPubSubPass;
+    }
+
+    public void setRedisPubSubPass(String redisPubSubPass) {
+        this.redisPubSubPass = redisPubSubPass;
     }
 }

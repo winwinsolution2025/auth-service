@@ -17,14 +17,25 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # =========================================================================
-# STAGE 2: Run the Native Binary in a lightweight environment
+# STAGE 2: extract zlib from bookworm-slim
+# =========================================================================
+FROM debian:bookworm-slim AS zlib-extractor
+RUN apt-get update && apt-get install -y --no-install-recommends zlib1g
+RUN mkdir /toptop && cp /lib/*/libz.so.1 /toptop/
+# =========================================================================
+# STAGE 3: Run the Native Binary in a lightweight environment
 # =========================================================================
 # Using Google's Distroless static image for maximum security and minimal size (~30MB)
-FROM gcr.io/distroless/static-debian12:latest
+# FROM gcr.io/distroless/static-debian12:latest
+FROM gcr.io/distroless/base-debian12:latest
+# FROM gcr.io/distroless/java21-debian12:latest
+# FROM debian:bookworm-slim
 WORKDIR /app
+
 # Copy the compiled native binary from the builder stage
 # (Adjust "app-java25-native" to match the <imageName> in your pom.xml)
 COPY --from=builder /build/target/app-java25-native /app/server
+COPY --from=zlib-extractor /toptop/libz.so.1 /lib/
 
 # Expose a common web port (adjust if your app listens on a different port)
 EXPOSE 8080

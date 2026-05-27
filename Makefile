@@ -1,5 +1,7 @@
 export DevID =ocid1.compartment.oc1..aaaaaaaadh37bvvavyij7uwekvq32eu6bgb2awddnmucisib6bdbsm4pcieq
 IMAGE := letanthang/auth-service
+dep:
+	./mvnw dependency:resolve
 gen:
 	mvn clean generate-sources
 gen/jooq:

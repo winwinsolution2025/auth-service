@@ -3,7 +3,7 @@ package com.example.authservice.domain.usecase.impl;
 import com.example.authservice.domain.entity.Token;
 import com.example.authservice.domain.repository.TokenRepository;
 import com.example.authservice.domain.usecase.VerifyTokenUseCase;
-import com.example.authservice.service.JwtService;
+import com.example.authservice.infrastructure.service.JwtService;
 
 import java.time.Instant;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.example.authservice.service.client.user;
+package com.example.authservice.infrastructure.service.user.user;
 
 import java.time.LocalDate;
 
@@ -9,14 +9,16 @@ public class CreateUserRequest {
     private String avatar;
     private LocalDate birthdate;
     private String email;
+    private String role;
 
-    public CreateUserRequest(String name, String gender, String nickname, String avatar, LocalDate birthdate, String email) {
+    public CreateUserRequest(String name, String gender, String nickname, String avatar, LocalDate birthdate, String email, String role) {
         this.name = name;
         this.gender = gender;
         this.nickname = nickname;
         this.avatar = avatar;
         this.birthdate = birthdate;
         this.email = email;
+        this.role = role;
     }
 
     // Getters and Setters
@@ -32,4 +34,10 @@ public class CreateUserRequest {
     public void setBirthdate(LocalDate birthdate) { this.birthdate = birthdate; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

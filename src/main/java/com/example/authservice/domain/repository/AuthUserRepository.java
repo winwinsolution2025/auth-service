@@ -11,6 +11,8 @@ public interface AuthUserRepository {
 
     Optional<AuthUser> getAuthUserByEmail(String email);
 
+    Optional<AuthUser> getAuthUserByGoogleId(String googleId);
+
     boolean deleteAuthUser(Integer id);
 
     boolean updateAuthUser(AuthUser authUser);

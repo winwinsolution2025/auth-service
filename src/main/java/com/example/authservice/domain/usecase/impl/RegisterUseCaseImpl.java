@@ -7,11 +7,11 @@ import com.example.authservice.domain.exception.InternalServerException;
 import com.example.authservice.domain.repository.AuthUserRepository;
 import com.example.authservice.domain.usecase.RegisterUseCase;
 import com.example.authservice.dto.UserRegisterRequest;
-import com.example.authservice.infrastructure.nats.AuthUserRegisterEvent;
-import com.example.authservice.infrastructure.nats.NatsJetStreamClient;
-import com.example.authservice.service.client.UserServiceClient;
-import com.example.authservice.service.client.user.CreateUserRequest;
-import com.example.authservice.service.client.user.UserResponse;
+import com.example.authservice.infrastructure.service.nats.AuthUserRegisterEvent;
+import com.example.authservice.infrastructure.service.nats.NatsJetStreamClient;
+import com.example.authservice.infrastructure.service.user.UserServiceClient;
+import com.example.authservice.infrastructure.service.user.user.CreateUserRequest;
+import com.example.authservice.infrastructure.service.user.user.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.HttpResponseException;
 import io.javalin.http.HttpStatus;
@@ -32,7 +32,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
 
     @Override
     public AuthUser register(UserRegisterRequest request) {
-        CreateUserRequest createUserRequest = new CreateUserRequest(request.getName(), request.getGender(), request.getNickname(), request.getAvatar(), request.getBirthdate(), request.getEmail());
+        CreateUserRequest createUserRequest = new CreateUserRequest(request.getName(), request.getGender(), request.getNickname(), request.getAvatar(), request.getBirthdate(), request.getEmail(), request.getRole());
         UserServiceClient userServiceClient = new UserServiceClient();
         UserResponse user;
         try {
@@ -49,7 +49,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
         }
 
         String hashedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt());
-        var authUser = new AuthUser(null, user.getId(), user.getUUID(), request.getEmail(), hashedPassword, Role.USER);
+        var authUser = new AuthUser(null, user.getId(), user.getUUID(), request.getEmail(), request.getGoogleId(), hashedPassword, Role.USER);
         this.authUserRepository.addAuthUser(authUser);
 
         try {

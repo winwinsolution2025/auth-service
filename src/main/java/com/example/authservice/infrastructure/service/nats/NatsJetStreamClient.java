@@ -1,4 +1,4 @@
-package com.example.authservice.infrastructure.nats;
+package com.example.authservice.infrastructure.service.nats;
 
 import io.nats.client.JetStream;
 import io.nats.client.Connection;

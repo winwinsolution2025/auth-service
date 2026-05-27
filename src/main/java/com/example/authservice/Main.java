@@ -3,13 +3,16 @@ package com.example.authservice;
 import com.example.authservice.config.AppConfig;
 import com.example.authservice.domain.exception.HttpException;
 import com.example.authservice.domain.exception.InvalidParameterException;
+import com.example.authservice.domain.gateway.publisher.MessagePublisher;
 import com.example.authservice.domain.repository.TokenRepository;
 import com.example.authservice.domain.usecase.impl.*;
 import com.example.authservice.dto.ErrorResponse;
 import com.example.authservice.infrastructure.controller.AuthController;
-import com.example.authservice.infrastructure.nats.NatsJetStreamClient;
+import com.example.authservice.infrastructure.service.google.GoogleTokenVerifier;
+import com.example.authservice.infrastructure.service.nats.NatsJetStreamClient;
 import com.example.authservice.infrastructure.repository.MySQLAuthUserRepository;
 import com.example.authservice.infrastructure.repository.MySQLTokenRepository;
+import com.example.authservice.infrastructure.service.redis.RedisPublisher;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -20,6 +23,9 @@ import io.javalin.http.HttpResponseException;
 import io.javalin.http.HttpStatus;
 import io.javalin.json.JavalinJackson;
 import io.javalin.plugin.bundled.CorsPluginConfig;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -34,7 +40,7 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Main {
     private static final Logger appLog = LoggerFactory.getLogger(Main.class);
-    private static DSLContext dbCtx;
+    private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
     public static void main(String[] args) throws Exception {
         AppConfig config = AppConfig.GetInstance();
@@ -42,11 +48,20 @@ public class Main {
 
         NatsJetStreamClient natBroker = new NatsJetStreamClient(config.getNatsOrigin(), config.getNatsUsername(), config.getNatsPassword());
 
+        RedisPublisher redisPublisher = new RedisPublisher(config.getRedisPubSubHost(), config.getRedisPubSubPort(), config.getRedisPubSubPass());
+
         DataSource ds = createHikariDataSource(config);
-        dbCtx = DSL.using(ds, SQLDialect.MYSQL);
+        DSLContext dbCtx = DSL.using(ds, SQLDialect.MYSQL);
+
+        var clientIds = config.getGoogleOAuthClientIds().split(",");
+        var googleTokenVerifier = new GoogleTokenVerifier(clientIds);
+
+        Validator validator = factory.getValidator();
+
+        String redisInChannel = config.getRedisPubSubInChannel();
 
 
-        var authController = getAuthController(natBroker, config);
+        var authController = getAuthController(dbCtx, natBroker, redisPublisher, redisInChannel, googleTokenVerifier, config, validator);
 
         Javalin app = Javalin.create(conf -> {
             //enable Virtual Threads (Loom Project)
@@ -109,7 +124,7 @@ public class Main {
     }
 
     @NotNull
-    private static AuthController getAuthController(NatsJetStreamClient natBroker, AppConfig config) {
+    private static AuthController getAuthController(DSLContext dbCtx, NatsJetStreamClient natBroker, MessagePublisher publisher, String redisInChannel, GoogleTokenVerifier googleTokenVerifier, AppConfig config, Validator validator) {
         var authUserRepository = new MySQLAuthUserRepository(dbCtx);
         var tokenRepository = new MySQLTokenRepository(dbCtx);
         removeExpireSession(tokenRepository);
@@ -117,12 +132,15 @@ public class Main {
         LogoutUseCaseImpl logoutUseCase = new LogoutUseCaseImpl(tokenRepository);
         LoginUseCaseImpl loginUseCase = new LoginUseCaseImpl(authUserRepository, tokenRepository, natBroker, config.getNatsAuthUserLoginSubject());
         RegisterUseCaseImpl registerUseCase = new RegisterUseCaseImpl(authUserRepository, natBroker, config.getNatsAuthUserRegisterSubject());
+        LoginByGoogleUseCaseImpl loginByGoogleUseCase = new LoginByGoogleUseCaseImpl(authUserRepository, tokenRepository, natBroker, config.getNatsAuthUserLoginSubject(), googleTokenVerifier, registerUseCase, publisher, redisInChannel);
         VerifyTokenUseCaseImpl verifyTokenUseCase = new VerifyTokenUseCaseImpl(tokenRepository);
         UpdatePasswordUseCaseImpl updatePasswordUseCase = new UpdatePasswordUseCaseImpl(authUserRepository);
 
         return new AuthController(
+                validator,
                 loginUseCase,
                 logoutUseCase,
+                loginByGoogleUseCase,
                 registerUseCase,
                 updatePasswordUseCase,
                 verifyTokenUseCase

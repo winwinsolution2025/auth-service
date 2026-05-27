@@ -11,9 +11,9 @@
 
     <logger name="org.eclipse.jetty" level="WARN" />
     <logger name="io.javalin" level="INFO" />
-    <logger name="org.jooq" level="DEBUG" />
+    <logger name="org.jooq" level="INFO" />
 
-    <variable name="CHOOSE_APPENDER" value="${env.CHOOSE_APPENDER:-JSON_CONSOLE}" />
+    <variable name="CHOOSE_APPENDER" value="${CHOOSE_APPENDER:-TEXT_CONSOLE}" />
     <root level="INFO">
         <appender-ref ref="${CHOOSE_APPENDER}" />
     </root>
