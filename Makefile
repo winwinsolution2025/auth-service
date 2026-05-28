@@ -45,7 +45,18 @@ build/multi:
 	--push \
       .
 up:
-	docker compose up
+	docker run $(IMAGE)
+up/migration:
+	docker run --rm \
+  	--network="host" \
+	  -e LIQUIBASE_COMMAND_URL="jdbc:mysql://127.0.0.1:3306/authdb" \
+	  -e LIQUIBASE_COMMAND_USERNAME="wws" \
+	  -e LIQUIBASE_COMMAND_PASSWORD='wws_password#2025#dev' \
+	  -e LIQUIBASE_DRIVER="com.mysql.cj.jdbc.Driver" \
+	  -e LIQUIBASE_SEARCH_PATH="/liquibase" \
+	  -e LIQUIBASE_COMMAND_CHANGELOG_FILE="db/changelog/db.changelog-master.xml" \
+	$(IMAGE)-migration \
+	update
 pull:
 	docker pull ap-singapore-1.ocir.io/axfnrpyfvlpv/auth-service:latest
 push:
