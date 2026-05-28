@@ -18,6 +18,12 @@
     "allDeclaredConstructors": true
   },
   {
+    "name": "com.example.authservice.dto.LoginResponse",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
     "name": "com.example.authservice.dto.ErrorResponse",
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
