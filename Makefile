@@ -29,13 +29,13 @@ build:
 	--load \
       .
 
-build/docker:
-	docker build \
-	--build-arg MAVEN_IMAGE=maven:3.9.6-eclipse-temurin-21 \
-	--build-arg JRE_IMAGE=eclipse-temurin:21-jre \
-	-t ap-singapore-1.ocir.io/axfnrpyfvlpv/auth-service:latest .
-# Optional multi-arch build using buildx (requires container driver or containerd image store)
-# Use --push to push to registry; --load supports single-platform only.
+build/migration:
+	docker buildx build \
+	--file ./Dockerfile-migration \
+	--platform linux/arm64 \
+	-t $(IMAGE)-migration \
+	--load \
+	.
 build/multi:
 	docker buildx build \
 	--platform linux/amd64,linux/arm64 \

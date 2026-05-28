@@ -1,4 +1,7 @@
 # Dockerfile-migration
 FROM liquibase/liquibase:4.25.1
+
+# Dùng lệnh ADD để tải thẳng file driver từ internet vào thư mục lib của Liquibase
+ADD --chmod=644 https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.0.33/mysql-connector-j-8.0.33.jar /liquibase/internal/lib/mysql-connector-j.jar
 # Copy changelog
 COPY src/main/resources/db/changelog /liquibase/changelog
