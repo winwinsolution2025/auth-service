@@ -1,0 +1,4 @@
+# Dockerfile-migration
+FROM liquibase/liquibase:4.25.1
+# Copy changelog
+COPY src/main/resources/db/changelog /liquibase/changelog
