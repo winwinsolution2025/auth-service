@@ -155,44 +155,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <version>0.10.6</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>build-native</id>
-                        <goals>
-                            <goal>compile-no-fork</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <imageName>app-java25-native</imageName>
-                    <mainClass>com.example.authservice.Main</mainClass>
-                    <buildArgs>
-                        <buildArg>--no-fallback</buildArg>
-                        <buildArg>-H:-ParseRuntimeOptions</buildArg>
-                        <buildArg>-Djava.awt.headless=true</buildArg>
-                        <buildArg>--trace-object-instantiation=java.io.ProxyingConsole</buildArg>
-                        <buildArg>--initialize-at-run-time=ch.qos.logback</buildArg>
-                        <buildArg>--initialize-at-run-time=org.slf4j</buildArg>
-                        <buildArg>--initialize-at-run-time=ch.qos.logback.classic.LoggerContext</buildArg>
-                        <buildArg>--initialize-at-run-time=ch.qos.logback.core.util.StatusPrinter</buildArg>
-                        <buildArg>--initialize-at-run-time=org.eclipse.jetty,io.javalin</buildArg>
-                        <buildArg>--initialize-at-build-time=org.jooq.meta</buildArg>
-                        <buildArg>--initialize-at-run-time=org.jooq.impl</buildArg>
-                        <buildArg>--initialize-at-run-time=org.jooq.tools</buildArg>
-                        <buildArg>--initialize-at-run-time=org.jooq.conf</buildArg>
-                        <buildArg>--initialize-at-run-time=com.oracle.svm.hosted.ProgressReporter</buildArg>
-                        <buildArg>--initialize-at-run-time=sun.security.util.Password</buildArg>
-                        <buildArg>--initialize-at-run-time=com.fasterxml.jackson.core.json.async.NonBlockingJsonParser</buildArg>
-                        <buildArg>-O3</buildArg>
-                    </buildArgs>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.25.1</version>
@@ -224,6 +186,59 @@
         </plugins>
     </build>
     <profiles>
+        <profile>
+            <id>native</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.graalvm.sdk</groupId>
+                    <artifactId>nativeimage</artifactId>
+                    <version>25.0.0</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>0.10.6</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase> </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>app-java25-native</imageName>
+                            <mainClass>com.example.authservice.Main</mainClass>
+                            <buildArgs>
+                                <buildArg>--features=com.example.authservice.config.RegisterReflectionFeature</buildArg>
+                                <buildArg>--no-fallback</buildArg>
+                                <buildArg>-O3</buildArg>
+                                <buildArg>-H:-ParseRuntimeOptions</buildArg>
+                                <buildArg>-Djava.awt.headless=true</buildArg>
+                                <buildArg>--trace-object-instantiation=java.io.ProxyingConsole</buildArg>
+                                <buildArg>--initialize-at-run-time=ch.qos.logback</buildArg>
+                                <buildArg>--initialize-at-run-time=org.slf4j</buildArg>
+                                <buildArg>--initialize-at-run-time=ch.qos.logback.classic.LoggerContext</buildArg>
+                                <buildArg>--initialize-at-run-time=ch.qos.logback.core.util.StatusPrinter</buildArg>
+                                <buildArg>--initialize-at-run-time=org.eclipse.jetty,io.javalin</buildArg>
+                                <buildArg>--initialize-at-build-time=org.jooq.meta</buildArg>
+                                <buildArg>--initialize-at-run-time=org.jooq.impl</buildArg>
+                                <buildArg>--initialize-at-run-time=org.jooq.tools</buildArg>
+                                <buildArg>--initialize-at-run-time=org.jooq.conf</buildArg>
+                                <buildArg>--initialize-at-run-time=com.oracle.svm.hosted.ProgressReporter</buildArg>
+                                <buildArg>--initialize-at-run-time=sun.security.util.Password</buildArg>
+                                <buildArg>--initialize-at-run-time=com.fasterxml.jackson.core.json.async.NonBlockingJsonParser</buildArg>
+                            </buildArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>jooq-codegen</id>
             <activation>

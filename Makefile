@@ -11,10 +11,10 @@ migrate:
 in:
 	mvn clean install -DskipTests
 run:
-	mvn clean install -DskipTests
+	mvn clean install -Pnative -DskipTests
 	./target/app-java25-native
 jvm:
-	mvn compile exec:java -Dexec.mainClass="com.example.authservice.Main"
+	mvn compile exec:java -Dexec.mainClass="com.example.authservice.Main" -Pnative
 native:
 	javac -d out src/main/java/com/example/authservice/Main.java && native-image -cp out com.example.authservice.Main out/main  && ./out/main
 

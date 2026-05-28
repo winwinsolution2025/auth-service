@@ -14,7 +14,7 @@ RUN ./mvnw dependency:go-offline -B
 # Copy source and build
 COPY src ./src
 # Build the Native Image
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -Pnative -DskipTests
 
 # =========================================================================
 # STAGE 2: extract zlib from bookworm-slim
