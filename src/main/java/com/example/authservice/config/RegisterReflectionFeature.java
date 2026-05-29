@@ -18,7 +18,8 @@ public class RegisterReflectionFeature implements Feature {
         String[] packagesToScan = new String[]{
                 "com.example.authservice.infrastructure.service.nats",
                 "com.example.authservice.dto",
-                "com.example.authservice.domain.entity"
+                "com.example.authservice.domain.entity",
+                "com.example.authservice.infrastructure.service.user.user"
         };
         for (String packageToScan:  packagesToScan) {
             try {
