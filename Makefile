@@ -6,6 +6,8 @@ gen:
 	mvn clean generate-sources
 gen/jooq:
 	mvn clean install -P jooq-codegen
+gen/token:
+	openssl rand -base64 32
 migrate:
 	mvn liquibase:update
 in:
