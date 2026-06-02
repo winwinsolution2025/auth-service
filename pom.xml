@@ -190,6 +190,12 @@
             <id>native</id>
             <dependencies>
                 <dependency>
+                    <groupId>io.github.classgraph</groupId>
+                    <artifactId>classgraph</artifactId>
+                    <version>4.8.165</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
                     <groupId>org.graalvm.sdk</groupId>
                     <artifactId>nativeimage</artifactId>
                     <version>25.0.0</version>

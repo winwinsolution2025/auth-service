@@ -1,5 +1,7 @@
 package com.example.authservice.config;
 
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeReflection;
 import org.slf4j.Logger;
@@ -21,12 +23,20 @@ public class RegisterReflectionFeature implements Feature {
                 "com.example.authservice.domain.entity",
                 "com.example.authservice.infrastructure.service.user.user"
         };
-        for (String packageToScan:  packagesToScan) {
-            try {
-                // scan these registered packages
-                List<Class<?>> classes = getClasses(packageToScan);
 
-                for (Class<?> clazz : classes) {
+        String currentClasspath = System.getProperty("java.class.path");
+        try (ScanResult scanResult = new ClassGraph()
+                .acceptPackages(packagesToScan)
+                .enableClassInfo()
+                .ignoreClassVisibility()
+                .overrideClasspath(currentClasspath)
+                .scan()) {
+
+            // scan these registered packages
+            List<Class<?>> classes = scanResult.getAllClasses().loadClasses();
+
+
+            for (Class<?> clazz : classes) {
                     // Register each class
                     RuntimeReflection.register(clazz);
                     RuntimeReflection.register(clazz.getDeclaredConstructors());
@@ -37,30 +47,5 @@ public class RegisterReflectionFeature implements Feature {
                 logger.error(e.getMessage());
                 throw new RuntimeException("[GraalVM CRITICAL BUILD FAILURE] Reflection scan aborted: " + e.getMessage(), e);
             }
-        }
-    }
-
-    // scan class from package (Standard Java)
-    private List<Class<?>> getClasses(String packageName) throws Exception {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        String path = packageName.replace('.', '/');
-        URL resource = classLoader.getResource(path);
-        if (resource == null) {
-            throw new IllegalArgumentException("Package path not found: " + packageName);
-        }
-
-        File directory = new File(resource.getFile());
-        List<Class<?>> classes = new ArrayList<>();
-        if (directory.exists()) {
-            File[] files = directory.listFiles();
-
-            for (File file : Objects.requireNonNull(files, "Directory listing returned null for package: " + packageName)) {
-                if (file.getName().endsWith(".class")) {
-                    String className = packageName + '.' + file.getName().substring(0, file.getName().length() - 6);
-                    classes.add(Class.forName(className));
-                }
-            }
-        }
-        return classes;
     }
 }
