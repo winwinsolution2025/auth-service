@@ -10,6 +10,9 @@ public class CreateUserRequest {
     private LocalDate birthdate;
     private String email;
     private String role;
+    
+    public CreateUserRequest() {
+    }
 
     public CreateUserRequest(String name, String gender, String nickname, String avatar, LocalDate birthdate, String email, String role) {
         this.name = name;

@@ -12,6 +12,9 @@ public class UserResponse {
     private String avatar;
     private String email;
 
+    public UserResponse() {
+    }
+
     // Getters and Setters
     public Integer getId() {
         return id;

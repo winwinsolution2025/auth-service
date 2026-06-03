@@ -47,7 +47,10 @@ build/multi:
 	--push \
       .
 up:
-	docker run $(IMAGE)
+	docker run --rm \
+	--network="host" \
+	--env-file .env \
+	$(IMAGE)
 up/migration:
 	docker run --rm \
   	--network="host" \
