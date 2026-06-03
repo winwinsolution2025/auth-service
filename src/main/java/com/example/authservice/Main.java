@@ -19,6 +19,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
+import io.javalin.http.Handler;
 import io.javalin.http.HttpResponseException;
 import io.javalin.http.HttpStatus;
 import io.javalin.json.JavalinJackson;
@@ -78,9 +79,9 @@ public class Main {
                     .build(), true));
 
             conf.router.apiBuilder(() -> {
-                get("/healthz", ctx -> {
-                        ctx.status(200).result("OK");
-                });
+                Handler healthHandler = ctx -> ctx.status(200).result("OK");
+                get("/healthz", healthHandler);
+                get("/auth/healthz", healthHandler);
                 // Auth route with api
                 path("/api/v1", () -> {
                     post("/auth/login", authController.login);
