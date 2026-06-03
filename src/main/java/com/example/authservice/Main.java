@@ -80,6 +80,9 @@ public class Main {
             conf.router.apiBuilder(() -> {
                 // Auth route with api
                 path("/api/v1", () -> {
+                    get("/healthz", ctx -> {
+                        ctx.status(200).result("OK");
+                    });
                     post("/auth/login", authController.login);
                     post("/auth/logout", authController.logout);
                     post("/auth/register", authController.register);

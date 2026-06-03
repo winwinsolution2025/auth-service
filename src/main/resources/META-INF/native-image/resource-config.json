@@ -1,6 +1,7 @@
 {
   "resources": {
     "includes": [
+      {"pattern": "logback\\.xml"},
       {"pattern": "db/changelog/.*\\.xml"},
       {"pattern": "db/changelog/.*\\.sql"},
       {"pattern": "liquibase\\.css"},
