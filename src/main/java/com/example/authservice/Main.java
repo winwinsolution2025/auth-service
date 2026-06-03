@@ -2,6 +2,7 @@ package com.example.authservice;
 
 import com.example.authservice.config.AppConfig;
 import com.example.authservice.domain.exception.HttpException;
+import com.example.authservice.domain.exception.InternalServerException;
 import com.example.authservice.domain.exception.InvalidParameterException;
 import com.example.authservice.domain.gateway.publisher.MessagePublisher;
 import com.example.authservice.domain.repository.TokenRepository;
@@ -96,6 +97,12 @@ public class Main {
 
         app.exception(UnrecognizedPropertyException.class, (e, ctx) -> {
             throw new InvalidParameterException(e.getMessage());
+        });
+
+        app.exception(InternalServerException.class, (e, ctx) -> {
+            appLog.error("internal server exception!", e);
+            ctx.status(e.getStatus());
+            ctx.json(new ErrorResponse(getStatusMessage(e.getStatus()), e.getMessage()));
         });
 
         app.exception(HttpException.class, (e, ctx) -> {
